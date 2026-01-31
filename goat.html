@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOAT Top 10 - Football Greatness Elo Ranking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1d1d2e 100%);
+            color: #f0f0f0;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #00adb5;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(90deg, #00adb5, #ff5722, #ffc107);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #bbbbbb;
+            max-width: 900px;
+            margin: 0 auto 20px;
+        }
+        
+        .era-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .era-pill {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .era-pill i {
+            font-size: 0.8rem;
+        }
+        
+        .golden { color: #ffc107; }
+        .modern { color: #00adb5; }
+        .classic { color: #ff5722; }
+        .pioneer { color: #9c27b0; }
+        
+        .ranking-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 1100px) {
+            .ranking-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .top-10-table {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .table-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #ffffff;
+            text-align: center;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        th {
+            padding: 15px 10px;
+            text-align: left;
+            color: #ffffff;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        td {
+            padding: 15px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+        
+        .rank-cell {
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-align: center;
+            width: 60px;
+        }
+        
+        .player-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .player-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .player-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .player-name {
+            font-weight: bold;
+        }
+        
+        .player-era {
+            font-size: 0.8rem;
+            color: #aaaaaa;
+        }
+        
+        .elo-cell {
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .rank-1 { background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent); }
+        .rank-2 { background: linear-gradient(90deg, rgba(192, 192, 192, 0.1), transparent); }
+        .rank-3 { background: linear-gradient(90deg, rgba(205, 127, 50, 0.1), transparent); }
+        
+        .detailed-view {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .detail-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #ffffff;
+            text-align: center;
+        }
+        
+        .player-detail {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .player-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .player-header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .player-detail-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 3px solid;
+        }
+        
+        .player-header-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .player-header-info p {
+            color: #aaaaaa;
+            font-size: 0.9rem;
+        }
+        
+        .player-header-right {
+            text-align: right;
+        }
+        
+        .total-elo-display {
+            font-size: 2.2rem;
+            font-weight: bold;
+        }
+        
+        .elo-breakdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .breakdown-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .breakdown-label {
+            font-size: 0.8rem;
+            color: #aaaaaa;
+            margin-bottom: 5px;
+        }
+        
+        .breakdown-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .key-achievements {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .key-achievements h4 {
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+        
+        .achievement-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .achievement-pill {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .charts-section {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 700px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .chart-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #ffffff;
+            text-align: center;
+        }
+        
+        .chart-wrapper {
+            height: 300px;
+            position: relative;
+        }
+        
+        .methodology {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .methodology h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #ffffff;
+            text-align: center;
+        }
+        
+        .methodology-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .method-point {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .method-point h4 {
+            color: #00adb5;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .footnote {
+            text-align: center;
+            color: #888;
+            font-size: 0.9rem;
+            padding: 20px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-btn.active {
+            background: #00adb5;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>GOAT Top 10 - Football Greatness Elo Ranking</h1>
+            <p class="subtitle">A comprehensive ranking of the 10 greatest football players of all time using an Elo-inspired system that accounts for achievements, longevity, era, and impact.</p>
+            
+            <div class="era-indicator">
+                <div class="era-pill"><i class="fas fa-crown golden"></i> Modern Era (Post-2000)</div>
+                <div class="era-pill"><i class="fas fa-futbol modern"></i> Golden Era (1980-2000)</div>
+                <div class="era-pill"><i class="fas fa-history classic"></i> Classic Era (1960-1980)</div>
+                <div class="era-pill"><i class="fas fa-flag pioneer"></i> Pioneer Era (Pre-1960)</div>
+            </div>
+        </header>
+        
+        <div class="navigation">
+            <button class="nav-btn active" onclick="showSection('ranking')">Top 10 Ranking</button>
+            <button class="nav-btn" onclick="showSection('charts')">Visual Analysis</button>
+            <button class="nav-btn" onclick="showSection('methodology')">Methodology</button>
+        </div>
+        
+        <div id="ranking-section">
+            <div class="ranking-container">
+                <div class="top-10-table">
+                    <h2 class="table-title">Top 10 All-Time Greatness Elo Ranking</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th width="80">Rank</th>
+                                <th>Player</th>
+                                <th width="120">Era</th>
+                                <th width="120">Total Elo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ranking-table-body">
+                            <!-- Filled by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="detailed-view">
+                    <h2 class="detail-title" id="detail-player-name">Player Details</h2>
+                    <div id="player-detail-container">
+                        <!-- Filled by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="charts-section" style="display: none;">
+            <div class="charts-section">
+                <div class="chart-container">
+                    <h3 class="chart-title">Top 10 Greatness Elo Comparison</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="top10BarChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3 class="chart-title">Era Distribution in Top 10</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="eraPieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h3 class="chart-title">Category Comparison Across Eras</h3>
+                <div class="chart-wrapper">
+                    <canvas id="categoryComparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div id="methodology-section" style="display: none;">
+            <div class="methodology">
+                <h2>Elo Model Methodology for Historical Comparison</h2>
+                <p>The "Football Greatness Elo" model has been adapted to allow fair comparison across different football eras, with the following key adjustments:</p>
+                
+                <div class="methodology-points">
+                    <div class="method-point">
+                        <h4>Era Adjustment Factor</h4>
+                        <p>Players from earlier eras receive a competition density adjustment (0.85-0.95 multiplier) to account for fewer games per season and less international competition.</p>
+                    </div>
+                    
+                    <div class="method-point">
+                        <h4>Historical Context Scoring</h4>
+                        <p>Achievements are weighted relative to their time period. Winning the first World Cup (1930) carries different historical weight than recent tournaments.</p>
+                    </div>
+                    
+                    <div class="method-point">
+                        <h4>Relative Dominance Bonus</h4>
+                        <p>Players who dominated their era more completely than peers receive bonus points (e.g., Pelé's 3 World Cups in a 12-team tournament era).</p>
+                    </div>
+                    
+                    <div class="method-point">
+                        <h4>Legacy & Influence Points</h4>
+                        <p>Additional points for players who fundamentally changed the game (Cruyff's Total Football, Beckenbauer's libero role).</p>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 30px; text-align: center;">Category Weighting</h3>
+                <div class="elo-breakdown" style="margin-top: 20px;">
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">Club Achievements</div>
+                        <div class="breakdown-value">25%</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">International</div>
+                        <div class="breakdown-value">25%</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">Individual Awards</div>
+                        <div class="breakdown-value">25%</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">Longevity & Records</div>
+                        <div class="breakdown-value">25%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footnote">
+            <p>Elo system adapted for historical football comparison. Achievements weighted relative to era and competition level.</p>
+            <p>Created for analytical and discussion purposes. Rankings reflect a quantitative analysis of career achievements.</p>
+        </div>
+    </div>
+
+    <script>
+        // Player data for top 10 GOAT list
+        const top10Players = [
+            {
+                rank: 1,
+                name: "Lionel Messi",
+                era: "Modern",
+                totalElo: 6615,
+                clubElo: 2075,
+                internationalElo: 1680,
+                individualElo: 1370,
+                longevityElo: 2190,
+                color: "#00adb5",
+                icon: "fas fa-futbol",
+                achievements: [
+                    "8× Ballon d'Or",
+                    "2022 World Cup Champion",
+                    "4× UEFA Champions League",
+                    "91 goals in calendar year (2012)",
+                    "Most goals for one club (672)",
+                    "All-time top scorer in La Liga"
+                ],
+                description: "The complete modern attacker with unprecedented playmaking and goal-scoring combination."
+            },
+            {
+                rank: 2,
+                name: "Pelé",
+                era: "Classic",
+                totalElo: 6500,
+                clubElo: 2000,
+                internationalElo: 2100,
+                individualElo: 1150,
+                longevityElo: 2150,
+                color: "#ff5722",
+                icon: "fas fa-crown",
+                achievements: [
+                    "3× World Cup Champion (1958, 1962, 1970)",
+                    "Most World Cup wins by any player",
+                    "Over 1000 career goals",
+                    "Youngest World Cup winner (17 years)",
+                    "2× Copa Libertadores",
+                    "Symbol of football globally"
+                ],
+                description: "The original football icon who defined excellence and brought global attention to the sport."
+            },
+            {
+                rank: 3,
+                name: "Cristiano Ronaldo",
+                era: "Modern",
+                totalElo: 4950,
+                clubElo: 1970,
+                internationalElo: 1020,
+                individualElo: 1500,
+                longevityElo: 1960,
+                color: "#ff5722",
+                icon: "fas fa-futbol",
+                achievements: [
+                    "5× Ballon d'Or",
+                    "5× UEFA Champions League",
+                    "All-time top scorer in men's football",
+                    "Champions League all-time top scorer (140)",
+                    "Only player to win league titles in England, Spain, Italy",
+                    "Most international goals (128)"
+                ],
+                description: "The ultimate athletic competitor with unparalleled goal-scoring consistency across leagues."
+            },
+            {
+                rank: 4,
+                name: "Diego Maradona",
+                era: "Golden",
+                totalElo: 4900,
+                clubElo: 1650,
+                internationalElo: 1850,
+                individualElo: 950,
+                longevityElo: 1450,
+                color: "#9c27b0",
+                icon: "fas fa-star",
+                achievements: [
+                    "1986 World Cup (carried Argentina)",
+                    "Goal of the Century vs England (1986)",
+                    "Napoli's only two Serie A titles",
+                    "UEFA Cup winner (1989)",
+                    "Argentinian football icon",
+                    "Most dominant individual World Cup performance"
+                ],
+                description: "The ultimate big-game player whose 1986 World Cup is the greatest individual tournament performance."
+            },
+            {
+                rank: 5,
+                name: "Johan Cruyff",
+                era: "Classic",
+                totalElo: 4850,
+                clubElo: 1850,
+                internationalElo: 1200,
+                individualElo: 1350,
+                longevityElo: 1650,
+                color: "#ff9800",
+                icon: "fas fa-chess-board",
+                achievements: [
+                    "3× Ballon d'Or",
+                    "3× European Cup with Ajax",
+                    "Inventor of 'Total Football'",
+                    "European Cup winner as player and manager",
+                    "La Liga title with Barcelona as player and manager",
+                    "1974 World Cup finalist (best player)"
+                ],
+                description: "The philosophical genius who transformed football tactics and aesthetics."
+            },
+            {
+                rank: 6,
+                name: "Franz Beckenbauer",
+                era: "Classic",
+                totalElo: 4750,
+                clubElo: 1850,
+                internationalElo: 1550,
+                individualElo: 1100,
+                longevityElo: 1450,
+                color: "#2196f3",
+                icon: "fas fa-shield-alt",
+                achievements: [
+                    "World Cup winner as captain (1974)",
+                    "European Championship winner (1972)",
+                    "3× European Cup winner",
+                    "Invented the modern sweeper/libero role",
+                    "Ballon d'Or winner (1972, 1976)",
+                    "World Cup winner as manager (1990)"
+                ],
+                description: "Der Kaiser revolutionized defensive play and is the only man to win World Cup as captain and manager."
+            },
+            {
+                rank: 7,
+                name: "Zinedine Zidane",
+                era: "Golden",
+                totalElo: 4600,
+                clubElo: 1600,
+                internationalElo: 1800,
+                individualElo: 950,
+                longevityElo: 1250,
+                color: "#4caf50",
+                icon: "fas fa-magic",
+                achievements: [
+                    "1998 World Cup champion",
+                    "2000 European Championship winner",
+                    "UEFA Champions League winner (2002)",
+                    "Ballon d'Or (1998)",
+                    "FIFA World Player of the Year (3×)",
+                    "Legendary 2002 UCL final volley"
+                ],
+                description: "The artist whose elegance and big-game performances defined a generation of midfield play."
+            },
+            {
+                rank: 8,
+                name: "Ronaldo Nazário",
+                era: "Golden",
+                totalElo: 4550,
+                clubElo: 1550,
+                internationalElo: 1750,
+                individualElo: 1250,
+                longevityElo: 1000,
+                color: "#e91e63",
+                icon: "fas fa-bolt",
+                achievements: [
+                    "2× World Cup winner (1994, 2002)",
+                    "3× FIFA World Player of the Year",
+                    "2× Ballon d'Or",
+                    "World Cup all-time top scorer (at retirement)",
+                    "UEFA Cup winner (1998)",
+                    "Youngest Ballon d'Or winner (1997)"
+                ],
+                description: "The unstoppable force whose peak brilliance was cut short by injuries but remains iconic."
+            },
+            {
+                rank: 9,
+                name: "Alfredo Di Stéfano",
+                era: "Pioneer",
+                totalElo: 4500,
+                clubElo: 2100,
+                internationalElo: 850,
+                individualElo: 950,
+                longevityElo: 1500,
+                color: "#795548",
+                icon: "fas fa-history",
+                achievements: [
+                    "5× European Cup consecutive wins",
+                    "8× La Liga titles",
+                    "2× Ballon d'Or",
+                    "Key to Real Madrid's European dominance",
+                    "Scored in 5 consecutive European Cup finals",
+                    "Played for 3 national teams"
+                ],
+                description: "The complete footballer who led Real Madrid to European dominance in the 1950s."
+            },
+            {
+                rank: 10,
+                name: "Michel Platini",
+                era: "Golden",
+                totalElo: 4450,
+                clubElo: 1600,
+                internationalElo: 1600,
+                individualElo: 1350,
+                longevityElo: 1100,
+                color: "#3f51b5",
+                icon: "fas fa-futbol",
+                achievements: [
+                    "3× consecutive Ballon d'Or (1983-85)",
+                    "1984 European Championship winner",
+                    "European Cup winner (1985)",
+                    "Top scorer at 1984 Euros (9 goals)",
+                    "French football icon",
+                    "Record 9 goals in a single Euros"
+                ],
+                description: "The midfield maestro whose peak years included three consecutive Ballon d'Or wins."
+            }
+        ];
+
+        // Fill the ranking table
+        function populateRankingTable() {
+            const tableBody = document.getElementById('ranking-table-body');
+            tableBody.innerHTML = '';
+            
+            top10Players.forEach(player => {
+                const row = document.createElement('tr');
+                row.className = `rank-${player.rank}`;
+                
+                // Rank column
+                const rankCell = document.createElement('td');
+                rankCell.className = 'rank-cell';
+                
+                // Add medal emoji for top 3
+                let rankText = player.rank;
+                if (player.rank === 1) rankText = '🥇';
+                else if (player.rank === 2) rankText = '🥈';
+                else if (player.rank === 3) rankText = '🥉';
+                
+                rankCell.textContent = rankText;
+                row.appendChild(rankCell);
+                
+                // Player column
+                const playerCell = document.createElement('td');
+                playerCell.className = 'player-cell';
+                playerCell.innerHTML = `
+                    <div class="player-avatar-small" style="background-color: ${player.color}20; border-color: ${player.color}">
+                        <i class="${player.icon}" style="color: ${player.color}"></i>
+                    </div>
+                    <div class="player-info">
+                        <div class="player-name">${player.name}</div>
+                        <div class="player-era">${player.era} Era</div>
+                    </div>
+                `;
+                playerCell.onclick = () => showPlayerDetail(player);
+                row.appendChild(playerCell);
+                
+                // Era column
+                const eraCell = document.createElement('td');
+                eraCell.textContent = player.era;
+                row.appendChild(eraCell);
+                
+                // Elo column
+                const eloCell = document.createElement('td');
+                eloCell.className = 'elo-cell';
+                eloCell.style.color = player.color;
+                eloCell.textContent = player.totalElo.toLocaleString();
+                row.appendChild(eloCell);
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Show first player details by default
+            if (top10Players.length > 0) {
+                showPlayerDetail(top10Players[0]);
+            }
+        }
+        
+        // Show player details
+        function showPlayerDetail(player) {
+            document.getElementById('detail-player-name').textContent = `${player.name} - ${player.era} Era`;
+            
+            const detailContainer = document.getElementById('player-detail-container');
+            detailContainer.innerHTML = `
+                <div class="player-detail">
+                    <div class="player-header">
+                        <div class="player-header-left">
+                            <div class="player-detail-avatar" style="background-color: ${player.color}20; border-color: ${player.color}">
+                                <i class="${player.icon}" style="color: ${player.color}"></i>
+                            </div>
+                            <div class="player-header-info">
+                                <h3 style="color: ${player.color}">${player.name}</h3>
+                                <p>${player.description}</p>
+                            </div>
+                        </div>
+                        <div class="player-header-right">
+                            <div class="total-elo-display" style="color: ${player.color}">${player.totalElo}</div>
+                            <div>Total Greatness Elo</div>
+                        </div>
+                    </div>
+                    
+                    <div class="elo-breakdown">
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Club Achievements</div>
+                            <div class="breakdown-value">${player.clubElo}</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">International Success</div>
+                            <div class="breakdown-value">${player.internationalElo}</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Individual Awards</div>
+                            <div class="breakdown-value">${player.individualElo}</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Longevity & Records</div>
+                            <div class="breakdown-value">${player.longevityElo}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="key-achievements">
+                        <h4>Key Achievements</h4>
+                        <div class="achievement-list">
+                            ${player.achievements.map(achievement => 
+                                `<div class="achievement-pill">${achievement}</div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Highlight selected row in table
+            document.querySelectorAll('#ranking-table-body tr').forEach((row, index) => {
+                if (index === player.rank - 1) {
+                    row.style.background = 'rgba(255, 255, 255, 0.05)';
+                } else {
+                    row.style.background = '';
+                }
+            });
+        }
+        
+        // Create charts
+        function createCharts() {
+            // Top 10 Bar Chart
+            const barCtx = document.getElementById('top10BarChart').getContext('2d');
+            const barChart = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: top10Players.map(p => p.name),
+                    datasets: [{
+                        label: 'Total Greatness Elo',
+                        data: top10Players.map(p => p.totalElo),
+                        backgroundColor: top10Players.map(p => p.color + 'CC'),
+                        borderColor: top10Players.map(p => p.color),
+                        borderWidth: 2,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const player = top10Players[context.dataIndex];
+                                    return [
+                                        `Total: ${player.totalElo}`,
+                                        `Club: ${player.clubElo}`,
+                                        `International: ${player.internationalElo}`,
+                                        `Individual: ${player.individualElo}`,
+                                        `Longevity: ${player.longevityElo}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 4000,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#f0f0f0',
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Elo Score',
+                                color: '#f0f0f0',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#f0f0f0',
+                                font: {
+                                    size: 11
+                                },
+                                maxRotation: 45
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Era Distribution Pie Chart
+            const eraCounts = {
+                'Modern': top10Players.filter(p => p.era === 'Modern').length,
+                'Golden': top10Players.filter(p => p.era === 'Golden').length,
+                'Classic': top10Players.filter(p => p.era === 'Classic').length,
+                'Pioneer': top10Players.filter(p => p.era === 'Pioneer').length
+            };
+            
+            const pieCtx = document.getElementById('eraPieChart').getContext('2d');
+            const pieChart = new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(eraCounts),
+                    datasets: [{
+                        data: Object.values(eraCounts),
+                        backgroundColor: [
+                            '#00adb5CC',
+                            '#ff5722CC',
+                            '#ff9800CC',
+                            '#795548CC'
+                        ],
+                        borderColor: [
+                            '#00adb5',
+                            '#ff5722',
+                            '#ff9800',
+                            '#795548'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#f0f0f0',
+                                font: {
+                                    size: 13
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const era = context.label;
+                                    const count = context.raw;
+                                    const percentage = Math.round((count / 10) * 100);
+                                    return `${era}: ${count} players (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Category Comparison Chart
+            const categoryCtx = document.getElementById('categoryComparisonChart').getContext('2d');
+            const categoryChart = new Chart(categoryCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Club', 'International', 'Individual', 'Longevity'],
+                    datasets: [
+                        {
+                            label: 'Modern Era Avg',
+                            data: [
+                                Math.round(top10Players.filter(p => p.era === 'Modern').reduce((sum, p) => sum + p.clubElo, 0) / eraCounts['Modern']),
+                                Math.round(top10Players.filter(p => p.era === 'Modern').reduce((sum, p) => sum + p.internationalElo, 0) / eraCounts['Modern']),
+                                Math.round(top10Players.filter(p => p.era === 'Modern').reduce((sum, p) => sum + p.individualElo, 0) / eraCounts['Modern']),
+                                Math.round(top10Players.filter(p => p.era === 'Modern').reduce((sum, p) => sum + p.longevityElo, 0) / eraCounts['Modern'])
+                            ],
+                            backgroundColor: 'rgba(0, 173, 181, 0.2)',
+                            borderColor: 'rgba(0, 173, 181, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(0, 173, 181, 1)'
+                        },
+                        {
+                            label: 'Golden Era Avg',
+                            data: [
+                                Math.round(top10Players.filter(p => p.era === 'Golden').reduce((sum, p) => sum + p.clubElo, 0) / eraCounts['Golden']),
+                                Math.round(top10Players.filter(p => p.era === 'Golden').reduce((sum, p) => sum + p.internationalElo, 0) / eraCounts['Golden']),
+                                Math.round(top10Players.filter(p => p.era === 'Golden').reduce((sum, p) => sum + p.individualElo, 0) / eraCounts['Golden']),
+                                Math.round(top10Players.filter(p => p.era === 'Golden').reduce((sum, p) => sum + p.longevityElo, 0) / eraCounts['Golden'])
+                            ],
+                            backgroundColor: 'rgba(255, 87, 34, 0.2)',
+                            borderColor: 'rgba(255, 87, 34, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(255, 87, 34, 1)'
+                        },
+                        {
+                            label: 'Classic Era Avg',
+                            data: [
+                                Math.round(top10Players.filter(p => p.era === 'Classic').reduce((sum, p) => sum + p.clubElo, 0) / eraCounts['Classic']),
+                                Math.round(top10Players.filter(p => p.era === 'Classic').reduce((sum, p) => sum + p.internationalElo, 0) / eraCounts['Classic']),
+                                Math.round(top10Players.filter(p => p.era === 'Classic').reduce((sum, p) => sum + p.individualElo, 0) / eraCounts['Classic']),
+                                Math.round(top10Players.filter(p => p.era === 'Classic').reduce((sum, p) => sum + p.longevityElo, 0) / eraCounts['Classic'])
+                            ],
+                            backgroundColor: 'rgba(255, 152, 0, 0.2)',
+                            borderColor: 'rgba(255, 152, 0, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(255, 152, 0, 1)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(255, 255, 255, 0.2)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            pointLabels: {
+                                color: '#f0f0f0',
+                                font: {
+                                    size: 13
+                                }
+                            },
+                            ticks: {
+                                display: false,
+                                color: '#f0f0f0'
+                            },
+                            suggestedMin: 800,
+                            suggestedMax: 2200
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#f0f0f0',
+                                font: {
+                                    size: 13
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Show/hide sections
+        function showSection(sectionId) {
+            // Hide all sections
+            document.getElementById('ranking-section').style.display = 'none';
+            document.getElementById('charts-section').style.display = 'none';
+            document.getElementById('methodology-section').style.display = 'none';
+            
+            // Show selected section
+            document.getElementById(`${sectionId}-section`).style.display = 'block';
+            
+            // Update active button
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // If showing charts, create them (in case not created yet)
+            if (sectionId === 'charts') {
+                createCharts();
+            }
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            populateRankingTable();
+            createCharts();
+        });
+    </script>
+</body>
+</html>
